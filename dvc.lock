@@ -1,0 +1,280 @@
+schema: '2.0'
+stages:
+  index:
+    cmd: python -m boxprop.index --out data/index.csv
+    deps:
+    - path: src/boxprop/fred.py
+      hash: md5
+      md5: 53bb4feda2cb2824e61c497c2186130f
+      size: 8672
+    - path: src/boxprop/index.py
+      hash: md5
+      md5: 98c8af130d5a91ffd0cbaf53422a32bb
+      size: 603
+    params:
+      params.yaml:
+        fred.revision: 980a8fa0331a8f03ffbcb30d4bf673ad439fc0fd
+    outs:
+    - path: data/index.csv
+      hash: md5
+      md5: 49cf03fec99904ad5aff4233c9a65844
+      size: 21125
+  select:
+    cmd: python -m boxprop.selection --index data/index.csv --out 
+      data/selection.csv
+    deps:
+    - path: data/index.csv
+      hash: md5
+      md5: 49cf03fec99904ad5aff4233c9a65844
+      size: 21125
+    - path: src/boxprop/selection.py
+      hash: md5
+      md5: 492b09db9fb6abd09ba3591959003a29
+      size: 1700
+    params:
+      params.yaml:
+        select:
+          n_sequences: 10
+          clip_length: 300
+          skip_frames: 15
+          split: test
+          max_per_class: 3
+    outs:
+    - path: data/selection.csv
+      hash: md5
+      md5: fa9d2f7a124d667ac723ca6dcb228e05
+      size: 836
+  fetch:
+    cmd: python -m boxprop.fetch --selection data/selection.csv --out data/clips
+      --events data/events
+    deps:
+    - path: data/selection.csv
+      hash: md5
+      md5: fa9d2f7a124d667ac723ca6dcb228e05
+      size: 836
+    - path: src/boxprop/fetch.py
+      hash: md5
+      md5: 3b0b00ddd12a0cf1a8e3aaa3f563d8bf
+      size: 1074
+    - path: src/boxprop/fred.py
+      hash: md5
+      md5: 53bb4feda2cb2824e61c497c2186130f
+      size: 8672
+    params:
+      params.yaml:
+        fred.revision: 980a8fa0331a8f03ffbcb30d4bf673ad439fc0fd
+    outs:
+    - path: data/clips
+      hash: md5
+      md5: 833ca5c0045db503d7c2cb441a56b351.dir
+      size: 416598755
+      nfiles: 6020
+    - path: data/events
+      hash: md5
+      md5: 990cda93c57c3e3be5927c88ce01b197.dir
+      size: 1135486834
+      nfiles: 10
+  represent:
+    cmd: python -m boxprop.represent --clips data/clips --events data/events 
+      --reps data/reps --out results/representations.csv
+    deps:
+    - path: data/clips
+      hash: md5
+      md5: 833ca5c0045db503d7c2cb441a56b351.dir
+      size: 416598755
+      nfiles: 6020
+    - path: data/events
+      hash: md5
+      md5: 990cda93c57c3e3be5927c88ce01b197.dir
+      size: 1135486834
+      nfiles: 10
+    - path: src/boxprop/ecf.py
+      hash: md5
+      md5: 92f2d12e2121de5bc60853e2a67b074d
+      size: 5740
+    - path: src/boxprop/events.py
+      hash: md5
+      md5: ff3e531bb1812fb326a95c3b32d808d9
+      size: 2332
+    - path: src/boxprop/represent.py
+      hash: md5
+      md5: 08988ad2d296b1d87edcae9410ea2e6e
+      size: 2802
+    params:
+      params.yaml:
+        represent:
+          hist_windows_ms:
+          - 10
+          - 50
+          count_clip: 3
+          align_frames: 20
+    outs:
+    - path: data/reps
+      hash: md5
+      md5: e6ec0a8cb3b6b551db23085af2ad1153.dir
+      size: 106077241
+      nfiles: 6000
+    - path: results/representations.csv
+      hash: md5
+      md5: 893e8466febfb3690130880faeb4ca1f
+      size: 515
+  propagate:
+    cmd: python -m boxprop.propagate --clips data/clips --reps data/reps --out 
+      results
+    deps:
+    - path: data/clips
+      hash: md5
+      md5: 833ca5c0045db503d7c2cb441a56b351.dir
+      size: 416598755
+      nfiles: 6020
+    - path: data/reps
+      hash: md5
+      md5: e6ec0a8cb3b6b551db23085af2ad1153.dir
+      size: 106077241
+      nfiles: 6000
+    - path: src/boxprop/boxes.py
+      hash: md5
+      md5: 6fd873db37cf3d83f9b757ab4f4899be
+      size: 1399
+    - path: src/boxprop/budget.py
+      hash: md5
+      md5: 540593b595e69e081cda19593fb9062a
+      size: 4059
+    - path: src/boxprop/drift.py
+      hash: md5
+      md5: 74aa4bca55a2ceead3ef7cd11912ca7b
+      size: 3060
+    - path: src/boxprop/propagate.py
+      hash: md5
+      md5: 8dd45d59cc01a13bd13b871a4fe3e2b4
+      size: 6313
+    - path: src/boxprop/sam2prop.py
+      hash: md5
+      md5: c85a4960345d0e98acfeff71be33e4fa
+      size: 7982
+    params:
+      params.yaml:
+        propagate:
+          model: tiny
+          fp16: true
+          representations:
+          - rgb
+          - evframe
+          - hist10
+          - hist50
+        simulate:
+          representations:
+          - evframe
+          budgets:
+          - 1
+          - 2
+          - 4
+          - 8
+          min_gap: 10
+          random_seeds:
+          - 0
+          - 1
+          iou_threshold: 0.5
+    outs:
+    - path: results/precision_check.json
+      hash: md5
+      md5: 39d34b61605214aadef5ab7dd50e0713
+      size: 122
+    - path: results/propagation
+      hash: md5
+      md5: c27ba715ccca13944346cebe58c2b309.dir
+      size: 3161739
+      nfiles: 40
+    - path: results/simulation.csv
+      hash: md5
+      md5: 4a39865d9b42de50ebfe3a99b07e593b
+      size: 11386
+    - path: results/timing.csv
+      hash: md5
+      md5: 17b51c72980a130fe9c427585b338dc0
+      size: 1883
+  report:
+    cmd: python -m boxprop.report --results results --clips data/clips --figures
+      figures
+    deps:
+    - path: data/clips
+      hash: md5
+      md5: 833ca5c0045db503d7c2cb441a56b351.dir
+      size: 416598755
+      nfiles: 6020
+    - path: data/reps
+      hash: md5
+      md5: e6ec0a8cb3b6b551db23085af2ad1153.dir
+      size: 106077241
+      nfiles: 6000
+    - path: results/propagation
+      hash: md5
+      md5: c27ba715ccca13944346cebe58c2b309.dir
+      size: 3161739
+      nfiles: 40
+    - path: results/simulation.csv
+      hash: md5
+      md5: 4a39865d9b42de50ebfe3a99b07e593b
+      size: 11386
+    - path: src/boxprop/drift.py
+      hash: md5
+      md5: 74aa4bca55a2ceead3ef7cd11912ca7b
+      size: 3060
+    - path: src/boxprop/report.py
+      hash: md5
+      md5: 06254dec90465ae2f7a0bd1a4de61ad0
+      size: 12582
+    params:
+      params.yaml:
+        simulate.iou_threshold: 0.5
+    outs:
+    - path: figures
+      hash: md5
+      md5: 0af78c46ded37db2d2f745b60fe3ec55.dir
+      size: 473694
+      nfiles: 3
+    - path: results/drift_auroc.csv
+      hash: md5
+      md5: c65e9dc60d9b4a63abf15f5f5e5a965e
+      size: 332
+    - path: results/metrics.json
+      hash: md5
+      md5: 151e5c0884f44e94575db95be6f36890
+      size: 1146
+    - path: results/quality_by_representation.csv
+      hash: md5
+      md5: ea278ddd96db14604ed949de8300553c
+      size: 181
+    - path: results/quality_per_clip.csv
+      hash: md5
+      md5: 6eae9b0d02e072de7dc059d4ccd5624a
+      size: 1364
+    - path: results/simulation_summary.csv
+      hash: md5
+      md5: dbe2eb3f7e5750e0e72e1539666cb4bd
+      size: 995
+  analyze:
+    cmd: python -m boxprop.analyze --results results --window 30
+    deps:
+    - path: results/propagation
+      hash: md5
+      md5: c27ba715ccca13944346cebe58c2b309.dir
+      size: 3161739
+      nfiles: 40
+    - path: results/simulation.csv
+      hash: md5
+      md5: 4a39865d9b42de50ebfe3a99b07e593b
+      size: 11386
+    - path: src/boxprop/analyze.py
+      hash: md5
+      md5: 219d0475b578ea28362c34ff62c5019a
+      size: 1672
+    outs:
+    - path: results/correction_effect.csv
+      hash: md5
+      md5: 29720edd6cd77cd3e1cabf419852d36e
+      size: 160
+    - path: results/correction_effect_per_clip.csv
+      hash: md5
+      md5: 62381dd32d7e21e50615f20f0686d3f0
+      size: 763

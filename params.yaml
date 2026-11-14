@@ -1,0 +1,26 @@
+fred:
+  revision: 980a8fa0331a8f03ffbcb30d4bf673ad439fc0fd
+
+select:
+  n_sequences: 10
+  clip_length: 300
+  skip_frames: 15
+  split: test
+  max_per_class: 3
+
+represent:
+  hist_windows_ms: [10, 50]
+  count_clip: 3
+  align_frames: 20
+
+propagate:
+  model: tiny
+  fp16: true
+  representations: [rgb, evframe, hist10, hist50]
+
+simulate:
+  representations: [evframe]
+  budgets: [1, 2, 4, 8]
+  min_gap: 10
+  random_seeds: [0, 1]
+  iou_threshold: 0.5

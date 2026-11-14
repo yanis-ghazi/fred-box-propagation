@@ -1,0 +1,107 @@
+stages:
+  index:
+    cmd: python -m boxprop.index --out data/index.csv
+    deps:
+      - src/boxprop/fred.py
+      - src/boxprop/index.py
+    params:
+      - fred.revision
+    outs:
+      - data/index.csv:
+          cache: false
+  select:
+    cmd: python -m boxprop.selection --index data/index.csv --out data/selection.csv
+    deps:
+      - data/index.csv
+      - src/boxprop/selection.py
+    params:
+      - select
+    outs:
+      - data/selection.csv:
+          cache: false
+  fetch:
+    cmd: python -m boxprop.fetch --selection data/selection.csv --out data/clips --events data/events
+    deps:
+      - data/selection.csv
+      - src/boxprop/fetch.py
+      - src/boxprop/fred.py
+    params:
+      - fred.revision
+    outs:
+      - data/clips:
+          cache: false
+      - data/events:
+          cache: false
+  represent:
+    cmd: python -m boxprop.represent --clips data/clips --events data/events --reps data/reps --out results/representations.csv
+    deps:
+      - data/clips
+      - data/events
+      - src/boxprop/represent.py
+      - src/boxprop/events.py
+      - src/boxprop/ecf.py
+    params:
+      - represent
+    outs:
+      - data/reps:
+          cache: false
+      - results/representations.csv:
+          cache: false
+  propagate:
+    cmd: python -m boxprop.propagate --clips data/clips --reps data/reps --out results
+    deps:
+      - data/clips
+      - data/reps
+      - src/boxprop/propagate.py
+      - src/boxprop/sam2prop.py
+      - src/boxprop/budget.py
+      - src/boxprop/drift.py
+      - src/boxprop/boxes.py
+    params:
+      - propagate
+      - simulate
+    outs:
+      - results/propagation:
+          cache: false
+      - results/simulation.csv:
+          cache: false
+      - results/timing.csv:
+          cache: false
+      - results/precision_check.json:
+          cache: false
+  report:
+    cmd: python -m boxprop.report --results results --clips data/clips --figures figures
+    deps:
+      - results/propagation
+      - results/simulation.csv
+      - data/clips
+      - data/reps
+      - src/boxprop/report.py
+      - src/boxprop/drift.py
+    params:
+      - simulate.iou_threshold
+    outs:
+      - figures:
+          cache: false
+      - results/quality_per_clip.csv:
+          cache: false
+      - results/quality_by_representation.csv:
+          cache: false
+      - results/drift_auroc.csv:
+          cache: false
+      - results/simulation_summary.csv:
+          cache: false
+    metrics:
+      - results/metrics.json:
+          cache: false
+  analyze:
+    cmd: python -m boxprop.analyze --results results --window 30
+    deps:
+      - results/propagation
+      - results/simulation.csv
+      - src/boxprop/analyze.py
+    outs:
+      - results/correction_effect.csv:
+          cache: false
+      - results/correction_effect_per_clip.csv:
+          cache: false

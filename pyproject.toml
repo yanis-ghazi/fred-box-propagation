@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "boxprop"
+version = "0.1.0"
+description = "SAM 2.1 box propagation, drift detection and correction-budget simulation on FRED (RGB and event camera)"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "pillow>=10.0",
+    "requests>=2.31",
+    "h5py>=3.9",
+    "pyyaml>=6.0",
+    "matplotlib>=3.7",
+    "scikit-learn>=1.3",
+]
+
+[project.optional-dependencies]
+sam2 = [
+    "torch>=2.5",
+    "sam2 @ git+https://github.com/facebookresearch/sam2.git@2b90b9f5ceec907a1c18123530e92e794ad901a4",
+    "numba>=0.59",
+]
+dev = [
+    "pytest>=8.0",
+    "dvc>=3.50",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
