@@ -1,0 +1,7 @@
+{
+ "seq": "9",
+ "rep": "rgb",
+ "frames": 100,
+ "fp16_vs_fp32_iou_mean": 0.9835752878830509,
+ "fp16_vs_fp32_iou_min": 0.0
+}

@@ -1,0 +1,9 @@
+rep,signal,auroc,frames,failures
+evframe,fb,0.6081,2990,1665
+evframe,mask_conf,0.8650,2990,1665
+evframe,obj_score,0.8396,2990,1665
+evframe,jump,0.2427,2990,1665
+evframe,size,0.5546,2990,1665
+evframe,empty,0.5745,2990,1665
+evframe,combined (equal weights),0.6823,2990,1665
+evframe,"logistic, leave one sequence out",0.8868,2990,1665

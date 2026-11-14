@@ -1,0 +1,55 @@
+{
+ "quality": {
+  "rgb": {
+   "miou": 0.1632,
+   "iou50": 0.1007
+  },
+  "evframe": {
+   "miou": 0.4354,
+   "iou50": 0.445
+  },
+  "hist10": {
+   "miou": 0.3139,
+   "iou50": 0.27
+  },
+  "hist50": {
+   "miou": 0.3847,
+   "iou50": 0.3453
+  }
+ },
+ "drift_auroc": {
+  "evframe/fb": 0.6081,
+  "evframe/mask_conf": 0.865,
+  "evframe/obj_score": 0.8396,
+  "evframe/jump": 0.2427,
+  "evframe/size": 0.5546,
+  "evframe/empty": 0.5745,
+  "evframe/combined (equal weights)": 0.6823,
+  "evframe/logistic, leave one sequence out": 0.8868
+ },
+ "simulation": {
+  "evframe/fixed/1": 0.4491,
+  "evframe/fixed/2": 0.4566,
+  "evframe/fixed/4": 0.4847,
+  "evframe/fixed/8": 0.5331,
+  "evframe/none/0": 0.4354,
+  "evframe/oracle/1": 0.3203,
+  "evframe/oracle/2": 0.3214,
+  "evframe/oracle/4": 0.4012,
+  "evframe/oracle/8": 0.4646,
+  "evframe/random/1": 0.4571,
+  "evframe/random/2": 0.4654,
+  "evframe/random/4": 0.4867,
+  "evframe/random/8": 0.5233,
+  "evframe/score/1": 0.4112,
+  "evframe/score/2": 0.4287,
+  "evframe/score/4": 0.441,
+  "evframe/score/8": 0.4757
+ },
+ "drift_example": {
+  "seq": "93",
+  "rep": "evframe",
+  "keyframe": 153,
+  "first_failure": 25
+ }
+}
