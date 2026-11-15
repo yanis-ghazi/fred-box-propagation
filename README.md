@@ -98,6 +98,18 @@ Results on the event frames, mean IoU over the 10 clips (`results/simulation_sum
 
 Guiding corrections by the drift score does worse than spacing them evenly, and choosing the worst frames with the reference does even worse. `boxprop.analyze` looks at the 30 frames that follow a single correction (`results/correction_effect.csv`). The fixed strategy corrects frame 150 on every clip. The 30 frames that follow it go from a mean IoU of 0.42 without correction to 0.51 with it. The score-guided correction lands on average at frame 206, on frames where the uncorrected IoU is 0.18. The 30 frames after it average 0.33, against 0.34 without the correction. The correction does not hold: on frames where SAM already struggles, it loses the drone again right after being reset. In this setting the budget is better spent on frames where the drone is still trackable than on the frames that are already wrong.
 
+The equal-weight score was fixed before the run. After seeing the AUROC table, the simulation was rerun in a second job with the best single signal, `mask_conf`, as the review score (`boxprop.posthoc`). Because the signal was picked from these results, this is a post-hoc check. Fixed keyframes were rerun in the same job and give the same values as in the first run (`results/posthoc_summary.csv`):
+
+| Corrections | Fixed | Mask decoder IoU |
+|---|---|---|
+| 0 | 0.435 | 0.435 |
+| 1 | 0.449 | 0.414 |
+| 2 | 0.457 | 0.423 |
+| 4 | 0.485 | 0.423 |
+| 8 | 0.533 | 0.454 |
+
+A better failure detector does not give a better review policy. Choosing by mask confidence stays below fixed spacing at every budget, and below no correction at all up to four corrections. Finding the frames where the track is wrong and finding the frames where a correction will hold are two different problems.
+
 ![Event-frame propagation on sequence 93, with the correction chosen by the drift score](figures/drift_correction.png)
 
 ### Cost
@@ -112,7 +124,7 @@ dvc repro
 dvc metrics show
 ```
 
-`dvc.yaml` chains `index`, `select`, `fetch`, `represent`, `propagate`, `report` and `analyze`. The parameters live in `params.yaml`, and `dvc.lock` records the hashes of every input and output of the run reported here. The clips, raw events and rendered representations are regenerated from the pinned Hugging Face revision, so they are not pushed to a DVC remote. The `propagate` stage needs a GPU and uses all visible GPUs, one process per GPU.
+`dvc.yaml` chains `index`, `select`, `fetch`, `represent`, `propagate`, `report`, `analyze` and `posthoc`. The parameters live in `params.yaml`, and `dvc.lock` records the hashes of every input and output of the runs reported here. The `posthoc` stage ran in a second Kaggle job, where the regenerated clips and representations had the same hashes as in the first. The clips, raw events and rendered representations are regenerated from the pinned Hugging Face revision, so they are not pushed to a DVC remote. The `propagate` stage needs a GPU and uses all visible GPUs, one process per GPU.
 
 `notebooks/kaggle_pipeline.ipynb` runs the same pipeline on a Kaggle GPU notebook with internet enabled. The tests run on synthetic data and cover box utilities, the ECF decoder on hand-built buffers, box calibration, keyframe selection and the segment logic of the correction simulation:
 
@@ -125,7 +137,7 @@ pytest
 - Ten clips of 300 frames from the test split. The per-clip spread is large (the RGB clip means range from 0.003 to 0.553), so differences of a few hundredths between strategies are not meaningful.
 - The reference boxes were produced by FRED's own semi-automatic pipeline on event frames, then checked by hand. This favours the event frames over RGB, and over histograms whose extent differs from the 33 ms frames.
 - The calibration assumes the margin between the drone and its box stays proportional over a clip. A poor mask on the prompt frame propagates its error to the whole run.
-- The drift score weights were chosen before the run and were not tuned. A learned combination would separate failures better, but the simulation was not rerun with it.
+- The drift score weights were chosen before the run and were not tuned. Mask confidence alone was tried afterwards as a review score; the learned combination was not simulated.
 - Only SAM 2.1 tiny was run. ETAP, a trained detector, video reconstruction (E2VID) and fine-tuning SAM on events are left for later work.
 
 ## Data

@@ -278,3 +278,86 @@ stages:
       hash: md5
       md5: 62381dd32d7e21e50615f20f0686d3f0
       size: 763
+  posthoc:
+    cmd: python -m boxprop.posthoc --clips data/clips --reps data/reps --results
+      results --rep evframe
+    deps:
+    - path: data/clips
+      hash: md5
+      md5: 833ca5c0045db503d7c2cb441a56b351.dir
+      size: 416598755
+      nfiles: 6020
+    - path: data/reps
+      hash: md5
+      md5: e6ec0a8cb3b6b551db23085af2ad1153.dir
+      size: 106077241
+      nfiles: 6000
+    - path: results/propagation/9_evframe.csv
+      hash: md5
+      md5: 90f00944c32ae34d4408d5851ed89809
+      size: 124547
+    - path: results/propagation/12_evframe.csv
+      hash: md5
+      md5: 7348f926080248e33e0c75928f277b31
+      size: 124270
+    - path: results/propagation/20_evframe.csv
+      hash: md5
+      md5: acb9651ea343e00f85594328fdf9686d
+      size: 125583
+    - path: results/propagation/21_evframe.csv
+      hash: md5
+      md5: 59ede7134db75a79143ca7c444fde35c
+      size: 96733
+    - path: results/propagation/29_evframe.csv
+      hash: md5
+      md5: 41b7d09498423d6c4f0ee84bd47a0210
+      size: 123786
+    - path: results/propagation/39_evframe.csv
+      hash: md5
+      md5: dda3d89b9e19013bd6fef514990ca16f
+      size: 105889
+    - path: results/propagation/93_evframe.csv
+      hash: md5
+      md5: 0b259bc6288673746512ec5a8ab77271
+      size: 124600
+    - path: results/propagation/110_evframe.csv
+      hash: md5
+      md5: a52004c27342a781646ab64e7a4366ed
+      size: 124226
+    - path: results/propagation/111_evframe.csv
+      hash: md5
+      md5: e3b09d6177212277ee549830b9f74de9
+      size: 120816
+    - path: results/propagation/138_evframe.csv
+      hash: md5
+      md5: 8652ab62c591ee961420fb37b8f96bfc
+      size: 124191
+    - path: src/boxprop/posthoc.py
+      hash: md5
+      md5: b7929773556e3a8a1f35371da243946e
+      size: 3421
+    - path: src/boxprop/budget.py
+      hash: md5
+      md5: 540593b595e69e081cda19593fb9062a
+      size: 4059
+    - path: src/boxprop/sam2prop.py
+      hash: md5
+      md5: c85a4960345d0e98acfeff71be33e4fa
+      size: 7982
+    params:
+      params.yaml:
+        simulate.budgets:
+        - 1
+        - 2
+        - 4
+        - 8
+        simulate.min_gap: 10
+    outs:
+    - path: results/posthoc_simulation.csv
+      hash: md5
+      md5: 53ea3da09b2010278a4dcdfe012d6212
+      size: 4984
+    - path: results/posthoc_summary.csv
+      hash: md5
+      md5: ffec39787b104dde17ebf45eb1a4f01a
+      size: 348

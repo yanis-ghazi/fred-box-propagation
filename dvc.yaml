@@ -105,3 +105,29 @@ stages:
           cache: false
       - results/correction_effect_per_clip.csv:
           cache: false
+  posthoc:
+    cmd: python -m boxprop.posthoc --clips data/clips --reps data/reps --results results --rep evframe
+    deps:
+      - data/clips
+      - data/reps
+      - results/propagation/9_evframe.csv
+      - results/propagation/12_evframe.csv
+      - results/propagation/20_evframe.csv
+      - results/propagation/21_evframe.csv
+      - results/propagation/29_evframe.csv
+      - results/propagation/39_evframe.csv
+      - results/propagation/93_evframe.csv
+      - results/propagation/110_evframe.csv
+      - results/propagation/111_evframe.csv
+      - results/propagation/138_evframe.csv
+      - src/boxprop/posthoc.py
+      - src/boxprop/budget.py
+      - src/boxprop/sam2prop.py
+    params:
+      - simulate.budgets
+      - simulate.min_gap
+    outs:
+      - results/posthoc_simulation.csv:
+          cache: false
+      - results/posthoc_summary.csv:
+          cache: false
